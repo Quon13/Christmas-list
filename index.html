@@ -430,23 +430,25 @@
 
 <div class="topbar">
   <div class="controls">
-    <button id="resetBtn" class="btn small">Рестарт</button>
-    <button id="autoAssignBtn" class="btn small">Изтегли всички</button>
+    <button id="resetBtn" class="btn small">Изтрий всичко</button>
+    <button id="autoAssignBtn" class="btn small">Избери всички</button>
     <button id="exportJpgBtn" class="btn small">Свали изображение</button>
   </div>
   <div id="status">Loading…</div>
 </div>
+
 <div class="rounds" id="roundsContainer"></div>
 
 <div class="editor-box">
   <h2>Участници</h2>
   <ul id="editList"></ul>
- <div class="editor-add">
+
+  <div class="editor-add">
     <input type="text" id="newComponentInput" placeholder="Нов участник">
     <button class="btn small" id="addComponentBtn">Добави</button>
   </div>
 </div>
-  
+
 <footer>
   Весели <code>празници</code> 
 </footer>
@@ -789,7 +791,3 @@ exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
  </div>
 </body>
 </html>
-
-
-
-
