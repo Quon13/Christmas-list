@@ -612,7 +612,7 @@ function render(){
 function updateStatus(){
   const remainingCount = pool.length;
   const chosenCount = components.length - remainingCount;
-  statusEl.textContent = `${chosenCount}/${components.length} изтеглени — ${remainingCount} оставащи`;
+  statusEl.textContent = `${chosenCount}/${components.length} избрани — ${remainingCount} оставащи`;
   // enable export only when all chosen
   const allChosen = components.every(c => !!results[c]);
   exportJpgBtn.disabled = !allChosen;
@@ -788,6 +788,69 @@ autoAssignBtn.addEventListener("click", () => {
   autoAssignRemaining();
 });
 exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
+
+</script>
+<script>
+
+// -----------------------
+// URL STATE SYSTEM
+// -----------------------
+
+function encodeStateToURL(stateObj) {
+  return btoa(JSON.stringify(stateObj));
+}
+
+function decodeStateFromURL() {
+  if (!location.hash.startsWith("#state=")) return null;
+  try {
+    return JSON.parse(atob(location.hash.replace("#state=", "")));
+  } catch {
+    return null;
+  }
+}
+
+function updateURLWithState(stateObj) {
+  const encoded = encodeStateToURL(stateObj);
+  history.replaceState(null, "", location.pathname + "#state=" + encoded);
+}
+
+
+// -----------------------
+// Example Integration
+// -----------------------
+
+let components = ["A", "B", "C", "D"];
+let pool = [...components];
+let rounds = components.map(c => c); 
+let results = {}; 
+
+// load state when page starts
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = decodeStateFromURL();
+  if (saved) {
+    components = saved.components;
+    pool = saved.pool;
+    rounds = saved.rounds;
+    results = saved.results;
+  }
+  render();
+});
+
+// example picking
+function pickForRound(roundName) {
+  const available = pool.filter(c => c !== roundName);
+  const chosen = available[Math.floor(Math.random() * available.length)];
+
+  results[roundName] = chosen;
+  pool = pool.filter(c => c !== chosen);
+
+  updateURLWithState({components, pool, results, rounds});
+  render();
+}
+
+function render() {
+  console.log("Rendering:", {components, pool, results, rounds});
+}
 
 </script>
  </div>
