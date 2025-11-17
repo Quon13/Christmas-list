@@ -790,7 +790,7 @@ autoAssignBtn.addEventListener("click", () => {
 exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
 
 </script>
-  <script>
+<script>
 
 // -----------------------
 // URL STATE SYSTEM
@@ -804,14 +804,24 @@ function decodeStateFromURL() {
   if (!location.hash.startsWith("#state=")) return null;
   try {
     return JSON.parse(atob(location.hash.replace("#state=", "")));
-  } catch {
+  } catch (e) {
+    console.error("Failed to decode URL state", e);
     return null;
   }
 }
+// At initialization
+const urlState = decodeStateFromURL();
+if(urlState){
+    components = urlState.components || components;
+    pool = urlState.pool || pool;
+    results = urlState.results || results;
+    rounds = urlState.rounds || rounds;
+}
 
 function updateURLWithState(stateObj) {
-  const encoded = encodeStateToURL(stateObj);
-  history.replaceState(null, "", location.pathname + "#state=" + encoded);
+  const encoded = btoa(JSON.stringify(stateObj));
+  const newURL = window.location.pathname + "#state=" + encoded;
+  history.replaceState(null, "", newURL);
 }
 
 
@@ -851,11 +861,13 @@ function pickForRound(roundName) {
 function render() {
   console.log("Rendering:", {components, pool, results, rounds});
 }
+pickForRound(roundName) {
+  // ... your current pick logic ...
+
+  updateURLWithState({ components, pool, results, rounds });
+}
 
 </script>
-    
  </div>
 </body>
 </html>
-
-
