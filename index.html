@@ -473,27 +473,9 @@ let pool = [];
 let results = {}; // map roundName -> chosenComponent
 
 /* Helpers */
-function saveState(){
-  localStorage.setItem(LS_POOL, JSON.stringify(pool));
-  localStorage.setItem(LS_RESULTS, JSON.stringify(results));
-  updateStatus();
-}
-function loadState(){
-  const sp = localStorage.getItem(LS_POOL);
-  const sr = localStorage.getItem(LS_RESULTS);
-  pool = sp ? JSON.parse(sp) : [...components];
-  results = sr ? JSON.parse(sr) : {};
-  // ensure pool doesn't contain already used results (in case editing components externally happened)
-  // but keep pool as-is to continue previous session.
-}
-function clearState(){
-  localStorage.removeItem(LS_POOL);
-  localStorage.removeItem(LS_RESULTS);
-  pool = [...components];
-  results = {};
-  render();
-  updateStatus();
-}
+function saveState(){ /* localStorage disabled */ }
+function loadState(){ /* localStorage disabled */ }
+function clearState(){ /* localStorage disabled */ }
 
 /* UI Rendering */
 const roundsContainer = document.getElementById("roundsContainer");
@@ -860,11 +842,6 @@ function pickForRound(roundName) {
 
 function render() {
   console.log("Rendering:", {components, pool, results, rounds});
-}
-pickForRound(roundName) {
-  // ... your current pick logic ...
-
-  updateURLWithState({ components, pool, results, rounds });
 }
 
 </script>
