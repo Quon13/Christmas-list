@@ -473,9 +473,27 @@ let pool = [];
 let results = {}; // map roundName -> chosenComponent
 
 /* Helpers */
-function saveState(){ /* localStorage disabled */ }
-function loadState(){ /* localStorage disabled */ }
-function clearState(){ /* localStorage disabled */ }
+function saveState(){
+  localStorage.setItem(LS_POOL, JSON.stringify(pool));
+  localStorage.setItem(LS_RESULTS, JSON.stringify(results));
+  updateStatus();
+}
+function loadState(){
+  const sp = localStorage.getItem(LS_POOL);
+  const sr = localStorage.getItem(LS_RESULTS);
+  pool = sp ? JSON.parse(sp) : [...components];
+  results = sr ? JSON.parse(sr) : {};
+  // ensure pool doesn't contain already used results (in case editing components externally happened)
+  // but keep pool as-is to continue previous session.
+}
+function clearState(){
+  localStorage.removeItem(LS_POOL);
+  localStorage.removeItem(LS_RESULTS);
+  pool = [...components];
+  results = {};
+  render();
+  updateStatus();
+}
 
 /* UI Rendering */
 const roundsContainer = document.getElementById("roundsContainer");
@@ -786,24 +804,14 @@ function decodeStateFromURL() {
   if (!location.hash.startsWith("#state=")) return null;
   try {
     return JSON.parse(atob(location.hash.replace("#state=", "")));
-  } catch (e) {
-    console.error("Failed to decode URL state", e);
+  } catch {
     return null;
   }
 }
-// At initialization
-const urlState = decodeStateFromURL();
-if(urlState){
-    components = urlState.components || components;
-    pool = urlState.pool || pool;
-    results = urlState.results || results;
-    rounds = urlState.rounds || rounds;
-}
 
 function updateURLWithState(stateObj) {
-  const encoded = btoa(JSON.stringify(stateObj));
-  const newURL = window.location.pathname + "#state=" + encoded;
-  history.replaceState(null, "", newURL);
+  const encoded = encodeStateToURL(stateObj);
+  history.replaceState(null, "", location.pathname + "#state=" + encoded);
 }
 
 
