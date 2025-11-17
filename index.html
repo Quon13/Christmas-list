@@ -129,7 +129,8 @@
 
    .editor-box {
   max-width: 270px;
-  margin-top: 50px;
+  margin-top: 10px;
+  margin-bottom: 30px;
   margin-left: 275px;
   background: #911a1d;
   padding: 15px;
@@ -430,14 +431,12 @@
 
 <div class="topbar">
   <div class="controls">
-    <button id="resetBtn" class="btn small">Обнови</button>
-    <button id="autoAssignBtn" class="btn small">Изтегли всички</button>
-    <button id="exportJpgBtn" class="btn small">Свали изображение</button>
+    <button id="resetBtn" class="btn small">Рестарт</button>
+    <button id="autoAssignBtn" class="btn small">Теглене</button>
+    <button id="exportJpgBtn" class="btn small">Списък</button>
   </div>
   <div id="status">Loading…</div>
 </div>
-
-<div class="rounds" id="roundsContainer"></div>
 
 <div class="editor-box">
   <h2>Участници</h2>
@@ -448,6 +447,9 @@
     <button class="btn small" id="addComponentBtn">Добави</button>
   </div>
 </div>
+
+
+<div class="rounds" id="roundsContainer"></div>
 
 <footer>
   Весели <code>празници</code> 
@@ -610,7 +612,7 @@ function render(){
 function updateStatus(){
   const remainingCount = pool.length;
   const chosenCount = components.length - remainingCount;
-  statusEl.textContent = `${chosenCount}/${components.length} chosen — ${remainingCount} left`;
+  statusEl.textContent = `${chosenCount}/${components.length} изтеглени — ${remainingCount} оставащи`;
   // enable export only when all chosen
   const allChosen = components.every(c => !!results[c]);
   exportJpgBtn.disabled = !allChosen;
