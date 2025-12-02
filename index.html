@@ -663,7 +663,7 @@ if (results[roundName]) {
 
     if (maskedRounds.has(roundName)) {
         // masked round → show encrypted
-        resDiv.textContent = "xxxxx";
+        resDiv.textContent = "ще разбереш на Коледа :)";
     } else {
         // visible round → show real result
         resDiv.textContent = results[roundName];
@@ -857,6 +857,8 @@ function exportResultsAsJPEG(){
 
 /* Initialization */
 loadStateFromURL();
+  // All results loaded from URL should initially be masked
+maskedRounds = new Set(Object.keys(results));
 render()
 
 /* Event handlers */
@@ -870,13 +872,11 @@ autoAssignBtn.addEventListener("click", () => {
   autoAssignRemaining();
 });
 exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
-// All results loaded from URL should initially be masked
-maskedRounds = new Set(Object.keys(results));
-
 </script>
  </div>
 </body>
 </html>
+
 
 
 
