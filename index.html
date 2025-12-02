@@ -462,38 +462,90 @@
 const components = [
   "1","2","3","4","5","6",
 ];
-/* ========================== */
+/* =========================================================
+      GLOBAL STATE (NO localStorage)
+      Progress is stored inside the URL (GitHub-safe)
+   ========================================================= */
 
-/* Keys for localStorage */
-const LS_POOL = "rrp_pool_v1";
-const LS_RESULTS = "rrp_results_v1";
-
-/* State */
 let pool = [];
-let results = {}; // map roundName -> chosenComponent
+let results = {}; // roundName -> chosen component
 
-/* Helpers */
-function saveState(){
-  localStorage.setItem(LS_POOL, JSON.stringify(pool));
-  localStorage.setItem(LS_RESULTS, JSON.stringify(results));
+
+/* --------- URL ENCODING / DECODING --------- */
+
+function encodeStateToURL(stateObj) {
+  try {
+    return btoa(encodeURIComponent(JSON.stringify(stateObj)));
+  } catch (e) {
+    console.error("Encoding failed:", e);
+    return "";
+  }
+}
+
+function decodeStateFromURL() {
+  if (!location.hash.startsWith("#state=")) return null;
+  try {
+    const encoded = location.hash.replace("#state=", "");
+    return JSON.parse(decodeURIComponent(atob(encoded)));
+  } catch (e) {
+    console.error("Decoding failed:", e);
+    return null;
+  }
+}
+
+function updateURLState() {
+  const stateObj = {
+    components,
+    pool,
+    results
+  };
+  const encoded = encodeStateToURL(stateObj);
+
+  history.replaceState(null, "", window.location.pathname + "#state=" + encoded);
+}
+function saveState() {
+  updateURLState();
   updateStatus();
 }
-function loadState(){
-  const sp = localStorage.getItem(LS_POOL);
-  const sr = localStorage.getItem(LS_RESULTS);
-  pool = sp ? JSON.parse(sp) : [...components];
-  results = sr ? JSON.parse(sr) : {};
-  // ensure pool doesn't contain already used results (in case editing components externally happened)
-  // but keep pool as-is to continue previous session.
-}
-function clearState(){
-  localStorage.removeItem(LS_POOL);
-  localStorage.removeItem(LS_RESULTS);
+
+
+/* --------- LOAD STATE ON PAGE START --------- */
+
+function loadStateFromURL() {
+  const saved = decodeStateFromURL();
+  if (saved) {
+    // restore saved state
+    components.length = 0;
+    components.push(...saved.components);
+
+    pool = saved.pool;
+    results = saved.results;
+
+    return;  // done
+  }
+
+  // no URL state → start fresh
   pool = [...components];
   results = {};
+}
+
+
+/* --------- CLEAR STATE (RESET) --------- */
+
+function clearState() {
+  pool = [...components];
+  results = {};
+  updateURLState();
   render();
   updateStatus();
 }
+
+
+/* --------- MODIFY EXISTING SAVE CALLS --------- */
+
+
+
+
 
 /* UI Rendering */
 const roundsContainer = document.getElementById("roundsContainer");
@@ -624,22 +676,18 @@ function updateStatus(){
    - saves state and re-renders
 */
 function pickForRound(roundName){
-  if(results[roundName]) return; // already picked
+  if(results[roundName]) return;
 
-  // available choices excluding the round's own name
   const valid = pool.filter(item => item !== roundName);
-
   if(valid.length === 0){
-    alert("Няма свободни варианти, моля зпочнете от начало.");
+    alert("Няма свободни варианти! Рестартирай.");
     return;
   }
 
-  const idx = Math.floor(Math.random() * valid.length);
-  const chosen = valid[idx];
-
-  // record and remove
+  const chosen = valid[Math.floor(Math.random() * valid.length)];
   results[roundName] = chosen;
   pool = pool.filter(p => p !== chosen);
+
   saveState();
   render();
 }
@@ -774,8 +822,8 @@ function exportResultsAsJPEG(){
 }
 
 /* Initialization */
-loadState();
-render();
+loadStateFromURL();
+render()
 
 /* Event handlers */
 resetBtn.addEventListener("click", () => {
@@ -788,69 +836,6 @@ autoAssignBtn.addEventListener("click", () => {
   autoAssignRemaining();
 });
 exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
-
-</script>
-<script>
-
-// -----------------------
-// URL STATE SYSTEM
-// -----------------------
-
-function encodeStateToURL(stateObj) {
-  return btoa(JSON.stringify(stateObj));
-}
-
-function decodeStateFromURL() {
-  if (!location.hash.startsWith("#state=")) return null;
-  try {
-    return JSON.parse(atob(location.hash.replace("#state=", "")));
-  } catch {
-    return null;
-  }
-}
-
-function updateURLWithState(stateObj) {
-  const encoded = encodeStateToURL(stateObj);
-  history.replaceState(null, "", location.pathname + "#state=" + encoded);
-}
-
-
-// -----------------------
-// Example Integration
-// -----------------------
-
-let components = ["A", "B", "C", "D"];
-let pool = [...components];
-let rounds = components.map(c => c); 
-let results = {}; 
-
-// load state when page starts
-window.addEventListener("DOMContentLoaded", () => {
-  const saved = decodeStateFromURL();
-  if (saved) {
-    components = saved.components;
-    pool = saved.pool;
-    rounds = saved.rounds;
-    results = saved.results;
-  }
-  render();
-});
-
-// example picking
-function pickForRound(roundName) {
-  const available = pool.filter(c => c !== roundName);
-  const chosen = available[Math.floor(Math.random() * available.length)];
-
-  results[roundName] = chosen;
-  pool = pool.filter(c => c !== chosen);
-
-  updateURLWithState({components, pool, results, rounds});
-  render();
-}
-
-function render() {
-  console.log("Rendering:", {components, pool, results, rounds});
-}
 
 </script>
  </div>
