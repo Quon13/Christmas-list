@@ -857,9 +857,10 @@ function exportResultsAsJPEG(){
 
 /* Initialization */
 loadStateFromURL();
-render()
-  // All results loaded from URL should initially be masked
+   // All results loaded from URL should initially be masked
 maskedRounds = new Set(Object.keys(results));
+render()
+ 
   
 /* Event handlers */
 resetBtn.addEventListener("click", () => {
@@ -876,6 +877,7 @@ exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
  </div>
 </body>
 </html>
+
 
 
 
