@@ -315,6 +315,9 @@
 </style>
 
 <script>
+let maskedRounds = new Set(); // rounds that must show "xxxxx"
+let hidePreviousResults = true; // A-mode: show "xxxxx" for already drawn rounds
+
 (function() {
   // ---------------------------
   // CONFIG (edit these values)
@@ -656,8 +659,20 @@ function render(){
 
     const resDiv = document.createElement("div");
     resDiv.className = "result";
-    resDiv.textContent = results[roundName] ? results[roundName] : " ";
-    if(!results[roundName]) resDiv.classList.add("muted");
+if (results[roundName]) {
+
+    if (maskedRounds.has(roundName)) {
+        // masked round → show encrypted
+        resDiv.textContent = "xxxxx";
+    } else {
+        // visible round → show real result
+        resDiv.textContent = results[roundName];
+    }
+
+} else {
+    resDiv.textContent = " ";
+    resDiv.classList.add("muted");
+}
 
     info.appendChild(pickBtn);
     info.appendChild(resDiv);
@@ -688,15 +703,24 @@ function updateStatus(){
 function pickForRound(roundName){
   if(results[roundName]) return;
 
+  // VALID OPTIONS
   const valid = pool.filter(item => item !== roundName);
   if(valid.length === 0){
     alert("Няма свободни варианти! Рестартирай.");
     return;
   }
 
+  // PICK RANDOM
   const chosen = valid[Math.floor(Math.random() * valid.length)];
   results[roundName] = chosen;
+
+  // REMOVE CHOSEN FROM POOL
   pool = pool.filter(p => p !== chosen);
+
+  // MASK all previous rounds
+  maskedRounds = new Set(
+    Object.keys(results).filter(r => r !== roundName)
+  );
 
   saveState();
   render();
@@ -846,11 +870,14 @@ autoAssignBtn.addEventListener("click", () => {
   autoAssignRemaining();
 });
 exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
+// All results loaded from URL should initially be masked
+maskedRounds = new Set(Object.keys(results));
 
 </script>
  </div>
 </body>
 </html>
+
 
 
 
