@@ -49,7 +49,7 @@
   body{
     font-family: var(--font-family);
     font-size: var(--font-size);
-    background: var(--bg);
+    background-color: #911a1d;
     color: var(--text);
     padding:26px;
     box-sizing: border-box;
@@ -199,6 +199,13 @@
   cursor: pointer;
 }
 
+
+.myImage {
+  position: absolute;
+  top: 120px;
+  left: 50px;
+  width: 150px;
+}
 
   footer { margin-top:20px; color:#fff; font-size:0.9rem; }
 
@@ -499,6 +506,8 @@ let hidePreviousResults = true; // A-mode: show "xxxxx" for already drawn rounds
     <button class="btn small" id="addComponentBtn">Добави</button>
   </div>
 </div>
+
+<img src="image.png" alt="6145930">
 
 <footer>
   Весели <code>празници</code> 
@@ -921,7 +930,6 @@ exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
  </div>
 </body>
 </html>
-
 
 
 
