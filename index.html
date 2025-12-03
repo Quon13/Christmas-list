@@ -215,8 +215,8 @@
 
   .round h2 {
     margin:0;
-    font-size:1rem;
-    width:90px;
+    font-size:0.8rem;
+    width:80px;
     flex-shrink:0;
   }
 
@@ -224,7 +224,7 @@
     flex:1;
     display:flex;
     align-items:center;
-    gap:35px;
+    gap:20px;
   }
 
   .round {
@@ -234,6 +234,7 @@
 
   .result {
     font-weight:700;
+    font-size:0.8rem;
     min-width:180px;
     text-align:left;
   }
@@ -450,6 +451,9 @@ let hidePreviousResults = true; // A-mode: show "xxxxx" for already drawn rounds
   <div id="status">Loading…</div>
 </div>
 
+
+<div class="rounds" id="roundsContainer"></div>
+
 <div class="editor-box">
   <h2>Участници</h2>
   <ul id="editList"></ul>
@@ -459,9 +463,6 @@ let hidePreviousResults = true; // A-mode: show "xxxxx" for already drawn rounds
     <button class="btn small" id="addComponentBtn">Добави</button>
   </div>
 </div>
-
-
-<div class="rounds" id="roundsContainer"></div>
 
 <footer>
   Весели <code>празници</code> 
@@ -876,6 +877,7 @@ exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
  </div>
 </body>
 </html>
+
 
 
 
