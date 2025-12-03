@@ -445,7 +445,8 @@ let hidePreviousResults = true; // A-mode: show "xxxxx" for already drawn rounds
 <div class="topbar">
   <div class="controls">
     <button id="resetBtn" class="btn small">Рестарт</button>
-    <button id="autoAssignBtn" class="btn small">Теглене</button>
+
+    <button id="shareBtn" class="btn small">Сподели</button>
     <button id="exportJpgBtn" class="btn small">Списък</button>
   </div>
   <div id="status">Loading…</div>
@@ -553,6 +554,12 @@ function clearState() {
   updateStatus();
 }
 
+function generateShareURL() {
+  // make sure URL is updated first
+  updateURLState();
+  return window.location.href;
+}
+
 
 /* --------- MODIFY EXISTING SAVE CALLS --------- */
 
@@ -566,6 +573,11 @@ const statusEl = document.getElementById("status");
 const resetBtn = document.getElementById("resetBtn");
 const autoAssignBtn = document.getElementById("autoAssignBtn");
 const exportJpgBtn = document.getElementById("exportJpgBtn");
+const shareBtn = document.getElementById("shareBtn");
+shareBtn.addEventListener("click", () => {
+  const url = generateShareURL();
+  prompt("Copy this short URL to share:", url);
+});
 
 /* =============================
    COMPONENT LIST EDITOR (UI)
@@ -574,6 +586,7 @@ const exportJpgBtn = document.getElementById("exportJpgBtn");
 const editList = document.getElementById("editList");
 const addComponentBtn = document.getElementById("addComponentBtn");
 const newComponentInput = document.getElementById("newComponentInput");
+
 
 /* Render editable list */
 function renderEditList() {
