@@ -124,7 +124,7 @@
   }
 
   .round {
-  max-width: 390px;
+  max-width: 400px;
   box-sizing: border-box; /* ensures padding fits inside width */
 }
 
@@ -140,7 +140,7 @@
    .editor-box {
   max-width: 270px;
   margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   margin-left: 275px;
   background: #911a1d;
   padding: 15px;
@@ -183,72 +183,27 @@
   cursor: pointer;
 }
 
+
   footer { margin-top:20px; color:#fff; font-size:0.9rem; }
-
-  .chat-box {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.messages {  
-  font-weight:600;
-  font-size:0.9rem;
-  max-height: 260px;
-  overflow-y: auto;
-  padding: 10px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.00);
-}
-
-.messages div {
-  background: rgba(10,10,10,0.0);
-  color: #fff;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 2px;
-  max-width: 560px;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.0);
-}
-
-
-
-
 
   /* ===== Mobile Optimizations ===== */
 @media (max-width: 600px) {
   /* Stack round content vertically */
-
- .app-container {
-  max-width: 450px;       /* limit width on large screens */
-  margin: 0px auto;      /* center horizontally with some top/bottom margin */
-  padding: 20px 25px;     /* spacing inside the box */
-  background: var(--card-bg, #fff); /* box background */
-  border-radius: 16px;    /* rounded corners */
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1); /* subtle shadow */
-  box-sizing: border-box;
-}
-
 .rounds {
     display:flex;
     flex-direction:column;
     align-items: center;  /* center everything horizontally */
     text-align: center;   /* center text */
   }
-
-.btn {
-    width: 90%;        /* take 80% of screen width */
-    max-width: 390px;
+  @media (max-width: 600px) {
+  .btn {
+    width: 60%;        /* take 80% of screen width */
+    max-width: 300px;
     padding: 5px 5px;   /* taller buttons for touch */
-    font-size: 0.6rem; /* larger text for readability */
+    font-size: 0.8rem; /* larger text for readability */
   }
-.round {
+}
+  .round {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 12px;
@@ -256,409 +211,7 @@
     display:flex;
     align-items:center;
     gap:12px;
-  }
 
-  .round h2 {
-    margin:0;
-    font-size:0.8rem;
-    width:80px;
-    flex-shrink:0;
-
-  }
-  .round .info {
-    flex:1;
-    display:flex;
-    align-items:center;
-    gap:20px;
-  }
-  .round {
-  max-width: 310px;
-  box-sizing: border-box; /* ensures padding fits inside width */
-}
-
-  .result {
-    font-size: 0.8rem;
-    font-weight:700;
-    min-width:180px;
-    text-align:left;
-    margin-left:0px;
-  }
-
-
-  .muted { color:#fff; font-weight:500; }
-
-  .editor-box {
-  margin-top: 20px;
-  margin-left: 0px;
-  background: #911a1d;
-  padding: 15px;
-  border-radius: 16px;
-  backdrop-filter: blur(5px);
-  }
-
-.editor-box h2 {
-  margin-top: 0;
-  font-size: 1.1rem;
-}
-
-#editList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#editList li {
-  display: flex;
-  align-items: left;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.edit-input {
-  flex: 1;
-  padding: 5px;
-  border-radius: 6px;
-  border: 0px solid #ccc;
-}
-
-.del-btn {
-  background: #a9212b;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-}
-
-  footer { margin-top:20px; color:#fff; font-size:0.9rem; }
-
-  /* Make buttons full-width for easier tap */
-  .btn {
-    width: 60%; /* 80% of screen width on mobile */
-    max-width: 300px;
-    padding: 5px, 5px;
-    font-size: 0.8rem;
-  }
-}
-
-
-
-
-
-
-</style>
-</head>
-<body>
-  <div class="app-container">
-  <canvas id="snow"></canvas>
-
-<style>
-  /* Canvas sits behind everything and covers the viewport */
-  #snow {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;           /* behind all content */
-  pointer-events: none;  /* allow clicks/taps through */
-}
-</style>
-
-<script>
-let maskedRounds = new Set(); // rounds that must show "xxxxx"
-let hidePreviousResults = true; // A-mode: show "xxxxx" for already drawn rounds
-
-(function() {
-  // ---------------------------
-  // CONFIG (edit these values)
-  // ---------------------------
-  const CONFIG = {
-    flakesCount: 140,         // how many snowflakes (density)
-    color: '255,255,255',     // RGB of flakes (use comma-separated values)
-    minSize: 1.5,             // smallest flake radius (px)
-    maxSize: 4.2,             // largest flake radius (px)
-    speedRange: [0.3, 1.2],   // vertical speed multiplier (px per frame approx)
-    windRange: [-0.4, 0.8],   // horizontal speed drift range
-    twinkle: true,            // whether flakes have twinkle (opacity flicker)
-    retina: true              // better quality on high-dpi displays
-  };
-  // ---------------------------
-
-  const canvas = document.getElementById('snow');
-  const ctx = canvas.getContext('2d');
-  let W = 0, H = 0, dpr = 1;
-  let flakes = [];
-  let raf;
-
-  function resize() {
-    dpr = (CONFIG.retina && window.devicePixelRatio) || 1;
-    W = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    H = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    canvas.width = Math.floor(W * dpr);
-    canvas.height = Math.floor(H * dpr);
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  function rand(min, max) { return Math.random() * (max - min) + min; }
-  function randInt(min, max) { return Math.floor(rand(min, max)); }
-
-  function makeFlake() {
-    return {
-      x: rand(0, W),
-      y: rand(-H * 0.5, H),               // start up to half screen above
-      r: rand(CONFIG.minSize, CONFIG.maxSize),
-      vy: rand(CONFIG.speedRange[0], CONFIG.speedRange[1]),
-      vx: rand(CONFIG.windRange[0], CONFIG.windRange[1]),
-      tilt: rand(-0.5, 0.5),
-      twinklePhase: Math.random() * Math.PI * 2
-    };
-  }
-
-  function initFlakes() {
-    flakes = [];
-    for (let i = 0; i < CONFIG.flakesCount; i++) flakes.push(makeFlake());
-  }
-
-  function drawFlake(f) {
-    ctx.beginPath();
-    // radial gradient for softer edge
-    const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * 2);
-    const base = `rgba(${CONFIG.color},`;
-    // twinkle effect alters alpha slightly
-    const tw = CONFIG.twinkle ? 0.6 + 0.4 * Math.sin(f.twinklePhase) : 1;
-    g.addColorStop(0, base + (0.95 * tw) + ')');
-    g.addColorStop(0.6, base + (0.6 * tw) + ')');
-    g.addColorStop(1, base + (0.0 * tw) + ')');
-    ctx.fillStyle = g;
-    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function update() {
-    ctx.clearRect(0, 0, W, H);
-    for (let i = 0; i < flakes.length; i++) {
-      const f = flakes[i];
-      // move
-      f.x += f.vx + 0.3 * Math.sin(f.y / 20 + f.tilt); // gentle sinusoidal sway
-      f.y += f.vy;
-      f.twinklePhase += 0.04 + (f.r / CONFIG.maxSize) * 0.04;
-
-      // recycle when out of view (bottom or far side)
-      if (f.y - f.r > H || f.x < -50 || f.x > W + 50) {
-        // respawn at top area
-        flakes[i] = makeFlake();
-        flakes[i].y = rand(-H * 0.3, -10);
-      } else {
-        drawFlake(f);
-      }
-    }
-    raf = requestAnimationFrame(update);
-  }
-
-  function start() {
-    cancelAnimationFrame(raf);
-    resize();
-    initFlakes();
-    update();
-  }
-
-  // respond to resize
-  window.addEventListener('resize', () => {
-    // small timeout to avoid thrashing
-    clearTimeout(window.__snow_resize_timeout);
-    window.__snow_resize_timeout = setTimeout(() => {
-      resize();
-    }, 80);
-  });
-
-  // start when DOM loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
-  } else start();
-
-  // expose a tiny API for runtime tweaks (optional)
-  window.__snow = {
-    start,
-    stop: () => { cancelAnimationFrame(raf); },
-    setDensity: (n) => { CONFIG.flakesCount = Math.max(0, Math.floor(n)); initFlakes(); },
-    setColorRGB: (r,g,b) => { CONFIG.color = `${r},${g},${b}`; },
-    setTwinkle: (v) => { CONFIG.twinkle = !!v; }
-  };
-
-})();
-</script>
-
-<h1>Коледна томбола</h1>
-
-<div class="topbar">
-  <div class="controls">
-    <button id="resetBtn" class="btn small">Рестарт</button>
-    <button id="autoAssignBtn" class="btn small">Теглене</button>
-    <button id="exportJpgBtn" class="btn small">Списък</button>
-  </div>
-  <div id="status">Loading…</div>
-</div>
-
-<div class="chat-box">
-  <h2>Отворено писмо до Дядо Коледа</h2>
-  <div id="messages" class="messages"></div>
-  <input type="text" id="chatInput" placeholder="Напиши съобщение">
-  <button id="sendBtn" class="btn small">Добави</button>
-</div>
-
-
-
-<div class="rounds" id="roundsContainer"></div>
-
-
-
-<div class="editor-box">
-  <h2>Участници</h2>
-  <ul id="editList"></ul>
-
-  <div class="editor-add">
-    <input type="text" id="newComponentInput" placeholder="Нов участник">
-    <button class="btn small" id="addComponentBtn">Добави</button>
-  </div>
-</div>
-
-</footer>
-
-<footer>
-  Весели <code>празници</code> 
-
-<script>
-/* ==========================
-   EDIT ONLY THIS ARRAY TO CHANGE COMPONENTS (rounds)
-   ========================== */
-const components = ["Снежка","Габи","Гриша","Мери","Ево","Петя","Леля","Дани","Лъко","Марто"];
-/* =========================================================
-      GLOBAL STATE (NO localStorage)
-      Progress is stored inside the URL (GitHub-safe)
-   ========================================================= */
-
-let pool = [];
-let results = {}; // roundName -> chosen component
-
-
-/* --------- URL ENCODING / DECODING --------- */
-
-function encodeStateToURL(stateObj) {
-  try {
-    return btoa(encodeURIComponent(JSON.stringify(stateObj)));
-  } catch (e) {
-    console.error("Encoding failed:", e);<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Коледна томбола</title>
-
-  <meta property="og:title" content="Коледна томбола" />
-<meta property="og:description" content="Онлайн теглене за коледната томбола" />
-<meta property="og:image" content="https://quon13.github.io/Christmas-list/preview.jpg" />
-<meta property="og:url" content="https://quon13.github.io/Christmas-list/" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Коледна томбола">
-<meta name="twitter:description" content="Онлайн теглене за коледната томбола">
-<meta name="twitter:image" content="https://quon13.github.io/Christmas-list/preview.jpg">
-  
-<!-- ======== Customize interface here (colors, typeface, button style) ======== -->
-<style>
-  .app-container {
-  max-width: 900px;       /* limit width on large screens */
-  margin: 0px auto;      /* center horizontally with some top/bottom margin */
-  padding: 20px 25px;     /* spacing inside the box */
-  background: var(--card-bg, #fff); /* box background */
-  border-radius: 16px;    /* rounded corners */
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1); /* subtle shadow */
-  box-sizing: border-box;
-}
-
-  :root{
-    --bg: #911a1d;          /* page background */
-    --card-bg: rgba(238, 41, 36, 0.7);     /* round card background */
-    --text: #fff;           /* main text color */
-    --accent: #a9212b;      /* primary button color */
-    --accent-contrast: #fff;/* button text color */
-    --card-border: #; /* card border */
-    --font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-size: 15px;
-    --round-gap: 12px;
-  }
-
-  html,body{height:100%;margin:0;}
-  body{
-    font-family: var(--font-family);
-    font-size: var(--font-size);
-    background: var(--bg);
-    color: var(--text);
-    padding:26px;
-    box-sizing: border-box;
-    align-items: center;  /* center everything horizontally */
-    text-align: center;   /* center text */
-  }
-
-  h1 {margin:0 0 12px 0; font-size:1.4rem;}
-
-  .topbar{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    margin-bottom:14px;
-  }
-
-  .btn {
-    background: var(--accent);
-    color: var(--accent-contrast);
-    border: none;
-    border-radius: 8px;
-    padding: 8px 8px;
-    cursor: pointer;
-    font-weight:600;
-    box-shadow: 0 2px 6px rgba(10,10,10,0.08);
-  }
-  .btn:disabled { opacity:0.5; cursor:not-allowed; }
-
-  .small {
-    padding:6px 8px;
-    font-size:0.9rem;
-    border-radius:6px;
-  }
-
-  .controls{
-    display:flex;
-    gap:8px;
-    align-items:center;
-  }
-
-  #status {
-    margin-left:auto;
-    font-size:0.95rem;
-    color:#fff;
-  }
-
-  .rounds {
-    display:flex;
-    flex-direction:column;
-    gap: var(--round-gap);
-    margin-top: 10px;
-    align-items: center;  /* center everything horizontally */
-    text-align: center;   /* center text */
-  }
-
-  .round {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 12px;
-    display:flex;
-    align-items:center;
-    gap:12px;
   }
 
   .round h2 {
@@ -676,7 +229,7 @@ function encodeStateToURL(stateObj) {
   }
 
   .round {
-  max-width: 390px;
+  max-width: 300px;
   box-sizing: border-box; /* ensures padding fits inside width */
 }
 
@@ -684,156 +237,6 @@ function encodeStateToURL(stateObj) {
     font-weight:700;
     min-width:180px;
     text-align:left;
-  }
-
-
-  .muted { color:#fff; font-weight:500; }
-
-   .editor-box {
-  max-width: 270px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 275px;
-  background: #911a1d;
-  padding: 15px;
-  border-radius: 16px;
-  backdrop-filter: blur(5px);
-
-}
-
-.editor-box h2 {
-  margin-top: 0;
-  font-size: 1.1rem;
-}
-
-#editList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#editList li {
-  display: flex;
-  align-items: left;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.edit-input {
-  flex: 1;
-  padding: 5px;
-  border-radius: 6px;
-  border: 0px solid #ccc;
-}
-
-.del-btn {
-  background: #a9212b;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-}
-
-  footer { margin-top:20px; color:#fff; font-size:0.9rem; }
-
-  .chat-box {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.messages {  
-  font-weight:600;
-  font-size:0.9rem;
-  max-height: 260px;
-  overflow-y: auto;
-  padding: 10px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.00);
-}
-
-.messages div {
-  background: rgba(10,10,10,0.0);
-  color: #fff;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 2px;
-  max-width: 560px;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.0);
-}
-
-
-
-
-
-  /* ===== Mobile Optimizations ===== */
-@media (max-width: 600px) {
-  /* Stack round content vertically */
-
- .app-container {
-  max-width: 450px;       /* limit width on large screens */
-  margin: 0px auto;      /* center horizontally with some top/bottom margin */
-  padding: 20px 25px;     /* spacing inside the box */
-  background: var(--card-bg, #fff); /* box background */
-  border-radius: 16px;    /* rounded corners */
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1); /* subtle shadow */
-  box-sizing: border-box;
-}
-
-.rounds {
-    display:flex;
-    flex-direction:column;
-    align-items: center;  /* center everything horizontally */
-    text-align: center;   /* center text */
-  }
-
-.btn {
-    width: 90%;        /* take 80% of screen width */
-    max-width: 390px;
-    padding: 5px 5px;   /* taller buttons for touch */
-    font-size: 0.6rem; /* larger text for readability */
-  }
-.round {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 10px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-
-  .round h2 {
-    margin:0;
-    font-size:0.8rem;
-    width:80px;
-    flex-shrink:0;
-
-  }
-  .round .info {
-    flex:1;
-    display:flex;
-    align-items:center;
-    gap:20px;
-  }
-  .round {
-  max-width: 310px;
-  box-sizing: border-box; /* ensures padding fits inside width */
-}
-
-  .result {
-    font-size: 0.8rem;
-    font-weight:700;
-    min-width:180px;
-    text-align:left;
-    margin-left:0px;
   }
 
 
@@ -892,12 +295,6 @@ function encodeStateToURL(stateObj) {
     font-size: 0.8rem;
   }
 }
-
-
-
-
-
-
 </style>
 </head>
 <body>
@@ -1054,19 +451,6 @@ let hidePreviousResults = true; // A-mode: show "xxxxx" for already drawn rounds
   <div id="status">Loading…</div>
 </div>
 
-<div class="chat-box">
-  <h2>Отворено писмо до Дядо Коледа</h2>
-  <div id="messages" class="messages"></div>
-  <input type="text" id="chatInput" placeholder="Напиши съобщение">
-  <button id="sendBtn" class="btn small">Добави</button>
-</div>
-
-
-
-<div class="rounds" id="roundsContainer"></div>
-
-
-
 <div class="editor-box">
   <h2>Участници</h2>
   <ul id="editList"></ul>
@@ -1077,16 +461,20 @@ let hidePreviousResults = true; // A-mode: show "xxxxx" for already drawn rounds
   </div>
 </div>
 
-</footer>
+
+<div class="rounds" id="roundsContainer"></div>
 
 <footer>
   Весели <code>празници</code> 
+</footer>
 
 <script>
 /* ==========================
    EDIT ONLY THIS ARRAY TO CHANGE COMPONENTS (rounds)
    ========================== */
-const components = ["1","2","3","4","5","6","7","8","9","10"];
+const components = [
+  "1","2","3","4","5","6",
+];
 /* =========================================================
       GLOBAL STATE (NO localStorage)
       Progress is stored inside the URL (GitHub-safe)
@@ -1122,8 +510,7 @@ function updateURLState() {
   const stateObj = {
     components,
     pool,
-    results,
-    chatMessages
+    results
   };
   const encoded = encodeStateToURL(stateObj);
 
@@ -1140,21 +527,17 @@ function saveState() {
 function loadStateFromURL() {
   const saved = decodeStateFromURL();
   if (saved) {
+    // restore saved state
     components.length = 0;
     components.push(...saved.components);
 
     pool = saved.pool;
     results = saved.results;
 
-    // restore messages
-    if (Array.isArray(saved.chatMessages)) {
-      chatMessages.length = 0;
-      chatMessages.push(...saved.chatMessages);
-    }
-
-    return;
+    return;  // done
   }
 
+  // no URL state → start fresh
   pool = [...components];
   results = {};
 }
@@ -1402,7 +785,7 @@ function autoAssignRemaining(){
 
   saveState();
   render();
-  alert("Готово! Сега идва трудната част, избирането на подаръци.");
+  alert("Готово! Сега идва трудната част, мисленето на подаръци.");
 }
 
 /* Fisher-Yates shuffle */
@@ -1490,46 +873,6 @@ autoAssignBtn.addEventListener("click", () => {
   autoAssignRemaining();
 });
 exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
-
-
-
-
-const chatInput = document.getElementById("chatInput");
-const sendBtn = document.getElementById("sendBtn");
-const messagesDiv = document.getElementById("messages");
-
-const chatMessages = []; // store messages temporarily (or in URL if needed)
-
-function renderMessages() {
-  messagesDiv.innerHTML = "";
-  chatMessages.forEach(msg => {
-    const msgDiv = document.createElement("div");
-    msgDiv.textContent = msg;
-    messagesDiv.appendChild(msgDiv);
-  });
-  messagesDiv.scrollTop = messagesDiv.scrollHeight; // scroll to bottom
-}
-
-sendBtn.addEventListener("click", () => {
-  const txt = chatInput.value.trim();
-  if(!txt) return;
-
-  chatMessages.push(txt);
-  chatInput.value = "";
-  
-  saveState();      // ← save to URL
-  renderMessages();
-});
-
-chatInput.addEventListener("keypress", (e) => {
-  if(e.key === "Enter") {
-    sendBtn.click();
-  }
-});
-
-// initial render
-renderMessages();
-
 </script>
  </div>
 </body>
@@ -1538,441 +881,6 @@ renderMessages();
 
 
 
-
-
-
-
-    return "";
-  }
-}
-
-function decodeStateFromURL() {
-  if (!location.hash.startsWith("#state=")) return null;
-  try {
-    const encoded = location.hash.replace("#state=", "");
-    return JSON.parse(decodeURIComponent(atob(encoded)));
-  } catch (e) {
-    console.error("Decoding failed:", e);
-    return null;
-  }
-}
-
-function updateURLState() {
-  const stateObj = {
-    components,
-    pool,
-    results,
-    chatMessages
-  };
-  const encoded = encodeStateToURL(stateObj);
-
-  history.replaceState(null, "", window.location.pathname + "#state=" + encoded);
-}
-function saveState() {
-  updateURLState();
-  updateStatus();
-}
-
-
-/* --------- LOAD STATE ON PAGE START --------- */
-
-function loadStateFromURL() {
-  const saved = decodeStateFromURL();
-  if (saved) {
-    components.length = 0;
-    components.push(...saved.components);
-
-    pool = saved.pool;
-    results = saved.results;
-
-    // restore messages
-    if (Array.isArray(saved.chatMessages)) {
-      chatMessages.length = 0;
-      chatMessages.push(...saved.chatMessages);
-    }
-
-    return;
-  }
-
-  pool = [...components];
-  results = {};
-}
-
-
-/* --------- CLEAR STATE (RESET) --------- */
-
-function clearState() {
-  pool = [...components];
-  results = {};
-  updateURLState();
-  render();
-  updateStatus();
-}
-
-
-/* --------- MODIFY EXISTING SAVE CALLS --------- */
-
-
-
-
-
-/* UI Rendering */
-const roundsContainer = document.getElementById("roundsContainer");
-const statusEl = document.getElementById("status");
-const resetBtn = document.getElementById("resetBtn");
-const autoAssignBtn = document.getElementById("autoAssignBtn");
-const exportJpgBtn = document.getElementById("exportJpgBtn");
-
-/* =============================
-   COMPONENT LIST EDITOR (UI)
-   ============================= */
-
-const editList = document.getElementById("editList");
-const addComponentBtn = document.getElementById("addComponentBtn");
-const newComponentInput = document.getElementById("newComponentInput");
-
-/* Render editable list */
-function renderEditList() {
-  editList.innerHTML = "";
-
-  components.forEach((name, index) => {
-    const li = document.createElement("li");
-
-    const input = document.createElement("input");
-    input.value = name;
-    input.className = "edit-input";
-
-    input.addEventListener("input", () => {
-      components[index] = input.value.trim();
-      saveState();
-      render();
-    });
-
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "x";
-    delBtn.className = "del-btn";
-
-    delBtn.addEventListener("click", () => {
-      if (!confirm("Изтриване на участник?")) return;
-
-      const removed = components[index];
-
-      components.splice(index, 1);
-
-      // also remove from results and pool
-      delete results[removed];
-      pool = pool.filter(x => x !== removed);
-
-      saveState();
-      render();
-      renderEditList();
-    });
-
-    li.appendChild(input);
-    li.appendChild(delBtn);
-    editList.appendChild(li);
-  });
-}
-
-/* Add new component */
-addComponentBtn.addEventListener("click", () => {
-  const txt = newComponentInput.value.trim();
-  if (!txt) return;
-
-  components.push(txt);
-  pool.push(txt); // available for drawing
-
-  newComponentInput.value = "";
-
-  saveState();
-  render();
-  renderEditList();
-});
-
-/* Initial load */
-renderEditList();
-
-function render(){
-  roundsContainer.innerHTML = "";
-  components.forEach((roundName, idx) => {
-    const card = document.createElement("div");
-    card.className = "round";
-
-    const title = document.createElement("h2");
-    title.textContent = roundName;
-
-    const info = document.createElement("div");
-    info.className = "info";
-
-    const pickBtn = document.createElement("button");
-    pickBtn.className = "btn small";
-    pickBtn.textContent = "Изтегли";
-    pickBtn.disabled = !!results[roundName]; // disable if chosen
-
-    pickBtn.addEventListener("click", () => {
-      pickForRound(roundName);
-    });
-
-    const resDiv = document.createElement("div");
-    resDiv.className = "result";
-if (results[roundName]) {
-
-    if (maskedRounds.has(roundName)) {
-        // masked round → show encrypted
-        resDiv.textContent = "Коледна тайна :)";
-    } else {
-        // visible round → show real result
-        resDiv.textContent = results[roundName];
-    }
-
-} else {
-    resDiv.textContent = " ";
-    resDiv.classList.add("muted");
-}
-
-    info.appendChild(pickBtn);
-    info.appendChild(resDiv);
-
-    card.appendChild(title);
-    card.appendChild(info);
-    roundsContainer.appendChild(card);
-  });
-
-  updateStatus();
-}
-
-/* Update status text showing remaining count */
-function updateStatus(){
-  const remainingCount = pool.length;
-  const chosenCount = components.length - remainingCount;
-  statusEl.textContent = `${chosenCount}/${components.length} избрани — ${remainingCount} оставащи`;
-  // enable export only when all chosen
-  const allChosen = components.every(c => !!results[c]);
-  exportJpgBtn.disabled = !allChosen;
-}
-
-/* Core pick function:
-   - excludes picking the same-name component for the round
-   - removes chosen item from pool
-   - saves state and re-renders
-*/
-function pickForRound(roundName){
-  if(results[roundName]) return;
-
-  // VALID OPTIONS
-  const valid = pool.filter(item => item !== roundName);
-  if(valid.length === 0){
-    alert("Няма свободни варианти! Рестартирай.");
-    return;
-  }
-
-  // PICK RANDOM
-  const chosen = valid[Math.floor(Math.random() * valid.length)];
-  results[roundName] = chosen;
-
-  // REMOVE CHOSEN FROM POOL
-  pool = pool.filter(p => p !== chosen);
-
-  // MASK all previous rounds
-  maskedRounds = new Set(
-    Object.keys(results).filter(r => r !== roundName)
-  );
-
-  saveState();
-  render();
-}
-
-/* Auto-assign algorithm:
-   - attempts to assign remaining pool items randomly to rounds that are not chosen yet
-   - respects no-self constraint
-   - uses randomized shuffles with retries
-*/
-function autoAssignRemaining(){
-  // rounds that still need a pick
-  const remainingRounds = components.filter(r => !results[r]);
-  const remainingPool = [...pool];
-
-  if(remainingRounds.length === 0){
-    alert("Готово");
-    return;
-  }
-
-  // Attempt to find a valid assignment (derangement-like but with arbitrary sets)
-  const maxTries = 10000;
-  let tryCount = 0;
-  let success = false;
-  let assignment = null;
-
-  while(tryCount < maxTries && !success){
-    tryCount++;
-    // shuffle the pool
-    const shuffled = shuffleArray(remainingPool.slice());
-
-    // map rounds -> shuffled items in order
-    let valid = true;
-    const mapping = {};
-    for(let i=0;i<remainingRounds.length;i++){
-      const r = remainingRounds[i];
-      const candidate = shuffled[i];
-      if(!candidate || candidate === r){
-        valid = false;
-        break;
-      }
-      mapping[r] = candidate;
-    }
-    if(valid){
-      success = true;
-      assignment = mapping;
-      break;
-    }
-    // else continue retrying
-  }
-
-  if(!success){
-    alert("Auto-assign failed after many attempts. This can happen when remaining items make no valid assignment possible. Consider resetting or manually picking earlier rounds differently.");
-    return;
-  }
-
-  // apply assignment
-  Object.keys(assignment).forEach(r => {
-    results[r] = assignment[r];
-    pool = pool.filter(p => p !== assignment[r]);
-  });
-
-  saveState();
-  render();
-  alert("Готово! Сега идва трудната част, избирането на подаръци.");
-}
-
-/* Fisher-Yates shuffle */
-function shuffleArray(arr){
-  for(let i = arr.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i+1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-/* Export final results as JPEG:
-   - requires all rounds to have a result
-   - draws a simple image on a canvas and downloads as JPG
-*/
-function exportResultsAsJPEG(){
-  // ensure all chosen
-  const allChosen = components.every(c => !!results[c]);
-  if(!allChosen){
-    alert("You must finish all rounds before exporting final results as a JPEG.");
-    return;
-  }
-
-  // Build textual lines
-  const lines = components.map(c => `${c}: ${results[c]}`);
-
-  // Canvas layout
-  const padding = 24;
-  const lineHeight = 24;
-  const width = 900;
-  const height = padding*2 + lineHeight * (lines.length + 2); // header + lines
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-
-  const ctx = canvas.getContext("2d");
-
-  // Background and header
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim() || "#fff";
-  ctx.fillRect(0,0,width,height);
-
-  // draw title
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || "#fff";
-  const fontFamily = getComputedStyle(document.documentElement).getPropertyValue('--font-family') || "Helvetica";
-  ctx.font = `bold 20px ${fontFamily}`;
-  ctx.fillText("Final Results", padding, padding + 10);
-
-  // draw lines
-  ctx.font = `20px ${fontFamily}`;
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || "#fff";
-  let y = padding + 10 + 32;
-  for(let i=0;i<lines.length;i++){
-    ctx.fillText(lines[i], padding, y);
-    y += lineHeight;
-  }
-
-  // convert to JPEG and download
-  canvas.toBlob(function(blob){
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "results.jpg";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }, "image/jpeg", 0.92);
-}
-
-/* Initialization */
-loadStateFromURL();
-   // All results loaded from URL should initially be masked
-maskedRounds = new Set(Object.keys(results));
-render()
- 
-  
-/* Event handlers */
-resetBtn.addEventListener("click", () => {
-  if(confirm("Искаш да рестартираш програмата? Това ще изчисти всички изтеглени до момента.")){
-    clearState();
-  }
-});
-autoAssignBtn.addEventListener("click", () => {
-  if(!confirm("Да изтегля ли човек за всяка от останалите позиции?")) return;
-  autoAssignRemaining();
-});
-exportJpgBtn.addEventListener("click", exportResultsAsJPEG);
-
-
-
-
-const chatInput = document.getElementById("chatInput");
-const sendBtn = document.getElementById("sendBtn");
-const messagesDiv = document.getElementById("messages");
-
-const chatMessages = []; // store messages temporarily (or in URL if needed)
-
-function renderMessages() {
-  messagesDiv.innerHTML = "";
-  chatMessages.forEach(msg => {
-    const msgDiv = document.createElement("div");
-    msgDiv.textContent = msg;
-    messagesDiv.appendChild(msgDiv);
-  });
-  messagesDiv.scrollTop = messagesDiv.scrollHeight; // scroll to bottom
-}
-
-sendBtn.addEventListener("click", () => {
-  const txt = chatInput.value.trim();
-  if(!txt) return;
-
-  chatMessages.push(txt);
-  chatInput.value = "";
-  
-  saveState();      // ← save to URL
-  renderMessages();
-});
-
-chatInput.addEventListener("keypress", (e) => {
-  if(e.key === "Enter") {
-    sendBtn.click();
-  }
-});
-
-// initial render
-renderMessages();
-
-</script>
- </div>
-</body>
-</html>
 
 
 
